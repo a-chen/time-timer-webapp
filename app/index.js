@@ -36,7 +36,7 @@ var timer = new ProgressBar.Circle($timerDisk.get(0), {
   color: 'inherit', // inherit to support css styling
   trailWidth: 40,
   trailColor: 'inherit', // inherit to support css styling
-  strokeWidth: 37,
+  strokeWidth: 40,
   duration: 1 * 1000,
   from: { color: '#c11535' },
   to:   { color: '#a21630' },
