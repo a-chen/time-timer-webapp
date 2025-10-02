@@ -9,7 +9,9 @@
   <script src="bundle.js" defer></script>
 </head>
 <body>
+  <div id="digitalClock"></div>
   <div id="timerContainer">
+    <div id="timerMarks"></div>
     <div id="timerDiskHole"></div>
     <div id="timerDisk"></div>
     <div id="timerGroundEnd"></div>
@@ -18,9 +20,12 @@
     <div id="timerTime"></div>
   </div>
   <div id="optionButtons">
+    <div id="themeToggle">
+      <img src="graphics/light-mode.svg">
+    </div>
     <div id="timerDirection">
       <img src="graphics/countdown.svg">
-    </div>    
+    </div>
     <div id="timerAlarmSelector" class="dropdown">
       <img src="graphics/alarm.svg">
       <div class="dropdown-content">

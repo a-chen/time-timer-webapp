@@ -18,14 +18,18 @@ var STORAGE = {
 
 var timerType = "countdown";
 var timerAlarmSound = new Audio('sounds/alarm_digital.mp3');
+var currentTheme = "dark";
 
 var $timerContainer = $('#timerContainer');
+var $timerMarks = $('#timerMarks');
 var $timerDisk = $('#timerDisk');
 var $timerBarKnob = $('#timerBarKnob');
 var $timerBarEnd = $('#timerBarEnd');
 var $timerTime = $('#timerTime');
 var $timerDirection = $('#timerDirection');
 var $timerAlarmSelector = $('#timerAlarmSelector');
+var $digitalClock = $('#digitalClock');
+var $themeToggle = $('#themeToggle');
 
 var timerLastDegree = 0;
 var timer = new ProgressBar.Circle($timerDisk.get(0), {
@@ -46,6 +50,7 @@ timer.svg.style.transform= 'scale(-1, 1)';
 // restore configuration from storage
 setTimerType(STORAGE.getObject('type') || 'countdown');
 setTimerAlarmSound(STORAGE.getObject('alarmSound') || 'digital');
+setTheme(STORAGE.getObject('theme') || 'dark');
 
 function setTimerType(type){
   if (type !== timerType) {
@@ -93,6 +98,27 @@ function setTimerAlarmSound(sound){
 }
 global.setTimerAlarmSound = setTimerAlarmSound
 
+function setTheme(theme){
+  currentTheme = theme;
+
+  var $body = $('body');
+  $body.removeClass('light-mode dark-mode');
+  $body.addClass(theme + '-mode');
+
+  var themeIcon = theme === 'dark' ? 'graphics/light-mode.svg' : 'graphics/dark-mode.svg';
+  $themeToggle.find('img').attr("src", themeIcon);
+
+  STORAGE.setObject('theme', theme);
+}
+
+function toggleTheme(){
+  if(currentTheme === "dark") {
+    setTheme("light");
+  } else {
+    setTheme("dark");
+  }
+}
+
 function updateTimerBar(timer, state){
   timer.path.setAttribute('stroke', state.color);
   
@@ -113,10 +139,8 @@ function updateTimerBar(timer, state){
 
 function updateTimerTime(timer, state){
   var valueSeconds = Math.round(timer.value() * DURATION_IN_SECONDS);
-  if(valueSeconds != timer.valueSeconds){
-    $timerTime.text(seconds2Date(valueSeconds).toISOString().substr(14, 5));
-    timer.valueSeconds = valueSeconds;
-  }
+  $timerTime.text(seconds2Date(valueSeconds).toISOString().substr(14, 5));
+  timer.valueSeconds = valueSeconds;
 }
 
 function startTimer(){
@@ -182,6 +206,7 @@ $timerContainer
   });
 
 $timerDirection.bind('click tap', toggleTimerType);
+$themeToggle.bind('click tap', toggleTheme);
 
 // Initial Time
 var urlParams = new URLSearchParams(window.location.search);
@@ -193,3 +218,41 @@ timer.animate(initialTimerDeg/360, function() {
   setTimer(initialTimerDeg);
   startTimer();
 });
+
+// Timer Marks and Numbers
+function createTimerMarks() {
+  var marksHtml = '';
+
+  // Create 60 tick marks (one for each minute)
+  for (var i = 0; i < 60; i++) {
+    var angle = i * 6; // 360 / 60 = 6 degrees per minute
+    var isMajor = i % 5 === 0; // Major tick every 5 minutes
+    var tickClass = isMajor ? 'timer-tick-major' : 'timer-tick-minor';
+
+    marksHtml += '<div class="timer-tick ' + tickClass + '" style="transform: rotate(' + angle + 'deg);"></div>';
+  }
+
+  // Create numbers (0, 5, 10, 15, etc.) - counter-clockwise
+  for (var i = 0; i < 60; i += 5) {
+    var angle = i * 6;
+    var number = i;
+
+    marksHtml += '<div class="timer-number" style="transform: rotate(' + (-angle) + 'deg) translateY(-36vmin) rotate(' + angle + 'deg);">' + number + '</div>';
+  }
+
+  $timerMarks.html(marksHtml);
+}
+
+createTimerMarks();
+
+// Digital Clock
+function updateDigitalClock() {
+  var now = new Date();
+  var hours = String(now.getHours()).padStart(2, '0');
+  var minutes = String(now.getMinutes()).padStart(2, '0');
+  var seconds = String(now.getSeconds()).padStart(2, '0');
+  $digitalClock.text(hours + ':' + minutes + ':' + seconds);
+}
+
+updateDigitalClock();
+setInterval(updateDigitalClock, 1000);
