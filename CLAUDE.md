@@ -34,7 +34,7 @@ Time Timer is a visual countdown/countup timer web application. It displays a ci
 - **Timer modes:** Countdown (default) or countup, toggled by clicking the direction icon
 - **Timer state:** Stored in `ProgressBar.Circle` instance; degree-based positioning (0-360°)
 - **Persistent settings:** LocalStorage stores timer type and alarm sound preference with `time-timer/` key prefix
-- **URL params:** `?init=600` sets initial timer in seconds (default: 10 minutes, max: 60 minutes)
+- **URL params:** `?init=0` sets initial timer in seconds (default: 0 minutes, max: 60 minutes)
 - **Visual updates:** `step` callback in ProgressBar config drives both arc rendering and time display
 - **User interaction:** Mouse/touch drag on timer disk to set time; stops timer during drag, restarts on release
 
@@ -97,3 +97,7 @@ When creating git commits:
   3. Interact with UI elements to test functionality
   4. Test both light mode and dark mode if applicable
 - This ensures changes render correctly and function as expected before completion
+
+** Testing **
+- Before a commit is made, a check should be made if there are corresponding tests present to be commited with the code
+- If not, create the corresponding tests

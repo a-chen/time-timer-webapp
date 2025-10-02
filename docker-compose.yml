@@ -1,8 +1,8 @@
 services:
   time-timer:
     build: .
-    ports:
-      - "9002:80"
-    container_name: time-timer-webapp
     environment:
-      - EXTERNAL_PORT=9002
+      - EXTERNAL_PORT=${EXTERNAL_PORT:-9002}
+    ports:
+      - "${EXTERNAL_PORT:-9002}:80"
+    container_name: time-timer-webapp
