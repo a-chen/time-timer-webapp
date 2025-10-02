@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  time-timer:
+    build: .
+    ports:
+      - "8080:80"
+    container_name: time-timer-webapp
