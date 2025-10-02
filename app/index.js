@@ -177,12 +177,13 @@ function seconds2Date(seconds){
 }
 
 var countainerMousedown = false;
-$timerContainer
-  .bind('mousedown touchstart', function(e) {
-    countainerMousedown = true;
-    stopTimer();
-    e.originalEvent.preventDefault();
-  })
+$timerContainer.bind('mousedown touchstart', function(e) {
+  countainerMousedown = true;
+  stopTimer();
+  e.originalEvent.preventDefault();
+});
+
+$(document)
   .bind('mousemove touchmove', function(e) {
     if (countainerMousedown) {
       var containerOffset = $timerContainer.offset();
@@ -198,14 +199,16 @@ $timerContainer
         targetDeg = 0.0;
       } else if (timerLastDegree > 270.0 && targetDeg < 90.0 ){
         targetDeg = 360.0;
-      } 
+      }
       timerLastDegree = targetDeg;
       setTimer(targetDeg);
     }
   })
   .bind('mouseup touchend', function(e) {
-    countainerMousedown = false;
-    startTimer();
+    if (countainerMousedown) {
+      countainerMousedown = false;
+      startTimer();
+    }
   });
 
 $timerDirection.bind('click tap', toggleTimerType);
