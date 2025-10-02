@@ -1,6 +1,9 @@
 # Build output
 dist/
 
+# Auto-generated files
+app/version.js
+
 # Dependencies
 node_modules/
 

@@ -77,6 +77,15 @@ CI/CD via GitHub Actions (`.github/workflows/build_deploy.yml`):
 - Mix of semicolons (inconsistent)
 - Direct Audio API usage for alarm sounds
 
+## Git Commit Messages
+
+When creating git commits:
+- Do NOT add emojis to commit messages
+- Do NOT add "Generated with Claude Code" footer
+- Do NOT add "Co-Authored-By: Claude" attribution
+- Use conventional commit format: `type: description`
+- Keep commit messages concise and focused on what changed and why
+
 ## Development Workflow
 
 **UI Change Verification:**
