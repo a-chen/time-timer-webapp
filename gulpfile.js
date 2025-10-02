@@ -15,6 +15,14 @@ gulp.task('clean', function() {
   return deleteAsync([destDir]);
 });
 
+gulp.task('clean-temp', function() {
+  return deleteAsync([
+    'playwright-report/',
+    'test-results/',
+    '.playwright-mcp/'
+  ]);
+});
+
 gulp.task('copy-resources',
   function() {
     return gulp.src([

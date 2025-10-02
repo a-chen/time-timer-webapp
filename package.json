@@ -6,7 +6,9 @@
   "scripts": {
     "build": "gulp build",
     "test": "playwright test",
-    "serve": "gulp serve"
+    "posttest": "gulp clean-temp",
+    "serve": "gulp serve",
+    "clean": "gulp clean-temp"
   },
   "author": "",
   "license": "ISC",
