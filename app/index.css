@@ -294,8 +294,8 @@ body.light-mode #timerTime {
   content: attr(data-tooltip);
   position: absolute;
   bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
+  right: 0;
+  transform: translateY(-8px);
   background-color: rgba(0, 0, 0, 0.9);
   color: #ffffff;
   padding: 6px 12px;
@@ -311,7 +311,7 @@ body.light-mode #timerTime {
 
 #optionButtons > div:hover::after {
   opacity: 1;
-  transform: translateX(-50%) translateY(-4px);
+  transform: translateY(-4px);
 }
 
 body.light-mode #optionButtons > div::after {
