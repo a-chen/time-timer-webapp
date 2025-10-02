@@ -147,6 +147,10 @@ body.light-mode .timer-number {
   transition: border-color 0.3s ease;
 }
 
+body.dark-mode #timerDisk {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
 body.light-mode #timerDisk {
   border-color: #4a4a4a;
 }
