@@ -210,14 +210,19 @@ $themeToggle.bind('click tap', toggleTheme);
 
 // Initial Time
 var urlParams = new URLSearchParams(window.location.search);
-var initialTimerSeconds = parseInt(urlParams.get('init')) || (10 * 60)
+if (!urlParams.has('init')) {
+  urlParams.set('init', '0');
+  var newUrl = window.location.pathname + '?' + urlParams.toString();
+  window.history.replaceState({}, '', newUrl);
+}
+var initialTimerSeconds = parseInt(urlParams.get('init')) || 0
 var initialTimerDeg = initialTimerSeconds / DURATION_IN_SECONDS * 360
-initialTimerDeg = Math.max(initialTimerDeg, 0); 
+initialTimerDeg = Math.max(initialTimerDeg, 0);
 initialTimerDeg = Math.min(initialTimerDeg, 360);
-timer.animate(initialTimerDeg/360, function() {
+if (initialTimerDeg > 0) {
   setTimer(initialTimerDeg);
   startTimer();
-});
+}
 
 // Timer Marks and Numbers
 function createTimerMarks() {
