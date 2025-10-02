@@ -1,11 +1,11 @@
 {
   "name": "time-timer-webapp",
   "version": "1.0.2",
-  "type":"module",
+  "type": "module",
   "description": "",
   "scripts": {
     "build": "gulp build",
-    "test": "echo \"Warn: no test specified\" && exit 1",
+    "test": "playwright test",
     "serve": "gulp serve"
   },
   "author": "",
@@ -16,6 +16,7 @@
     "progressbar.js": "^1.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.1",
     "brfs": "^2.0.2",
     "browser-sync": "^3.0.4",
     "browserify": "^17.0.1",
