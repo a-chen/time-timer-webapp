@@ -264,3 +264,9 @@ function updateDigitalClock() {
 
 updateDigitalClock();
 setInterval(updateDigitalClock, 1000);
+
+// Display version info
+var versionInfo = require('./version.js');
+var $versionDisplay = $('<div id="versionInfo"></div>');
+$versionDisplay.text('v' + versionInfo.VERSION + ' (' + versionInfo.BUILD_DATE + ')');
+$('body').append($versionDisplay);
