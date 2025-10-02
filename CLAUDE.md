@@ -54,6 +54,7 @@ Time Timer is a visual countdown/countup timer web application. It displays a ci
 Multi-stage build:
 1. Node 16 Alpine - build stage (runs `npm run build`)
 2. Nginx 1.21 Alpine - production stage (serves `dist/` on port 80)
+3. Use `docker compose` instead of `docker-compose`
 
 **Commands:**
 ```sh

@@ -124,19 +124,12 @@ function toggleTheme(){
 
 function updateTimerBar(timer, state){
   timer.path.setAttribute('stroke', state.color);
-  
-  var containerRadius = $timerDisk.outerWidth() / 2.0;
+
   var rotation = timer.value() * 360.0;
-  var position = {
-    x: - Math.sin(rotation * Math.PI / 180.0) * containerRadius + containerRadius,
-    y: - Math.cos(rotation * Math.PI / 180.0) * containerRadius - containerRadius
-  };
-  $timerBarEnd.css({ 
-    transformOrigin: 'top',
-    transform: 'translate(' + (position.x - $timerBarEnd.width() / 2.0) + 'px,' + position.y + 'px)' + ' rotate(' + -rotation + 'deg)'
-  });
-  $timerBarKnob.css({ 
-    transform: 'translate(' + (position.x - $timerBarKnob.width() / 2.0) + 'px,' + (position.y - $timerBarKnob.height() / 2.0) + 'px)' 
+
+  // Position timer bar knob: rotate around center, then translate outward to edge (40vmin = radius)
+  $timerBarKnob.css({
+    transform: 'rotate(' + (-rotation) + 'deg) translateY(-40vmin)'
   });
 }
 

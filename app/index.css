@@ -208,11 +208,7 @@ body.light-mode #timerGroundEnd {
 }
 
 #timerBarEnd {
-  position: absolute;
-  width: 2px;
-  height: 39%;
-  background: rgba(150, 150, 150, 0.4);
-  transition: background 0.3s ease;
+  display: none;
 }
 
 body.light-mode #timerBarEnd {
@@ -223,6 +219,11 @@ body.light-mode #timerBarEnd {
   position: absolute;
   height: 32px;
   width: 32px;
+  top: 50%;
+  left: 50%;
+  margin-left: -16px;
+  margin-top: -16px;
+  transform-origin: 16px 16px;
   background-color: #b3b3b3;
   border-radius: 50%;
   cursor: pointer;
