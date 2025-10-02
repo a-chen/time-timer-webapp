@@ -2,5 +2,7 @@ services:
   time-timer:
     build: .
     ports:
-      - "8080:80"
+      - "9002:80"
     container_name: time-timer-webapp
+    environment:
+      - EXTERNAL_PORT=9002
