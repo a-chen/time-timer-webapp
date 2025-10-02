@@ -56,20 +56,22 @@ function setTimerType(type){
   if (type !== timerType) {
     timerLastDegree = 360.0 - timerLastDegree;
   }
-  
+
   timerType = type;
-  
+
   var rotate = 0.0;
+  var marksRotate = 0.0;
   var directionImage = 'graphics/countdown.svg';
   if(timerType == "countup") {
     rotate = 180.0;
-    directionImage = 'graphics/countup.svg';    
+    marksRotate = -180.0;
+    directionImage = 'graphics/countup.svg';
   }
 
   $timerDirection.find('img').attr("src", directionImage);
 
-  var animation_transform_rotateY = { 
-    duration: 1500, 
+  var animation_transform_rotateY = {
+    duration: 1500,
     easing: 'easeOutBack',
     step: function(now, tween) {
       if (tween.prop === 'transform_rotateY') {
@@ -77,10 +79,11 @@ function setTimerType(type){
       }
     }
   };
-  
+
   $timerContainer.animate({ transform_rotateY: rotate }, animation_transform_rotateY);
   $timerTime.animate({ transform_rotateY: rotate }, animation_transform_rotateY);
-  
+  $timerMarks.animate({ transform_rotateY: marksRotate }, animation_transform_rotateY);
+
   startTimer();
 }
 
