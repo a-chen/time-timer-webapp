@@ -127,9 +127,9 @@ function updateTimerBar(timer, state){
 
   var rotation = timer.value() * 360.0;
 
-  // Position timer bar knob: rotate around center, then translate outward to edge (40vmin = radius)
+  // Position timer bar knob: rotate around center, then translate outward to edge (35vmin = radius)
   $timerBarKnob.css({
-    transform: 'rotate(' + (-rotation) + 'deg) translateY(-40vmin)'
+    transform: 'rotate(' + (-rotation) + 'deg) translateY(-35vmin)'
   });
 }
 
@@ -241,7 +241,7 @@ function createTimerMarks() {
     var angle = i * 6;
     var number = i;
 
-    marksHtml += '<div class="timer-number" style="transform: rotate(' + (-angle) + 'deg) translateY(-36vmin) rotate(' + angle + 'deg);">' + number + '</div>';
+    marksHtml += '<div class="timer-number" style="transform: rotate(' + (-angle) + 'deg) translateY(-38vmin) rotate(' + angle + 'deg);">' + number + '</div>';
   }
 
   $timerMarks.html(marksHtml);
