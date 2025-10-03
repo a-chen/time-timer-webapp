@@ -266,3 +266,24 @@ var versionInfo = require('./version.js');
 var $versionDisplay = $('<div id="versionInfo"></div>');
 $versionDisplay.text('v' + versionInfo.VERSION + ' (' + versionInfo.BUILD_DATE + ')');
 $('body').append($versionDisplay);
+
+// Create Buy Me a Coffee button with custom image
+function setupBuyMeCoffeeButton() {
+  var container = document.getElementById('buyMeCoffee');
+  if (container) {
+    var link = document.createElement('a');
+    link.href = 'https://buymeacoffee.com/andrew.chen';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+
+    var img = document.createElement('img');
+    img.src = 'graphics/coffee.png';
+    img.alt = 'Buy me a coffee';
+    img.style.width = '32px';
+    img.style.height = '32px';
+
+    link.appendChild(img);
+    container.appendChild(link);
+  }
+}
+setupBuyMeCoffeeButton();

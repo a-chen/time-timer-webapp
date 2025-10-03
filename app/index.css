@@ -417,3 +417,24 @@ body.light-mode .github-corner::after {
   background-color: rgba(0, 0, 0, 0.85);
 }
 
+#buyMeCoffee {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  width: 32px;
+}
+
+#buyMeCoffee > a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+}
+
+#buyMeCoffee img {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
