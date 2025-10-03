@@ -1,6 +1,6 @@
 # time-timer-webapp [![starline](https://starlines.qoo.monster/assets/qoomon/time-timer-webapp)](https://github.com/qoomon/starlines)
 
-## [See it live](timer.andrewchen.website)
+## [See it live](https://timer.andrewchen.website)
 
 - Inspired by the physical [Time Timer](https://www.timetimer.com/)
 - Built on code from [qoomon](https://github.com/qoomon/time-timer-webapp)
