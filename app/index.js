@@ -273,7 +273,7 @@ setInterval(updateDigitalClock, 1000);
 // Display version info
 var versionInfo = require('./version.js');
 var $versionDisplay = $('<div id="versionInfo"></div>');
-$versionDisplay.text('v' + versionInfo.VERSION + ' (' + versionInfo.BUILD_DATE + ')');
+$versionDisplay.html('v' + versionInfo.VERSION + ' <span class="build-date">(' + versionInfo.BUILD_DATE + ')</span>');
 $('body').append($versionDisplay);
 
 // Create Buy Me a Coffee button with custom image
