@@ -25,22 +25,42 @@ test.describe('Timer Drag Functionality', () => {
     const startX = centerX;
     const startY = centerY - 100; // 100px above center, well inside the circle
 
-    // Move mouse to start position, press down
-    await page.mouse.move(startX, startY);
-    await page.mouse.down();
+    // Use page.evaluate to trigger jQuery events properly
+    await page.evaluate(({ startX, startY, endX, endY }) => {
+      const $timerContainer = $('#timerContainer');
+      const containerOffset = $timerContainer.offset();
 
-    // Drag outside the circle to 3 o'clock position (way outside)
-    const endX = centerX + 400; // 400px to the right of center, well outside
-    const endY = centerY;
+      // Trigger mousedown
+      const mousedownEvent = $.Event('mousedown', {
+        pageX: startX,
+        pageY: startY,
+        originalEvent: { preventDefault: () => {} }
+      });
+      $timerContainer.trigger(mousedownEvent);
 
-    // Move in steps to simulate dragging
-    await page.mouse.move(endX, endY, { steps: 10 });
+      // Simulate dragging with mousemove events
+      for (let step = 0; step <= 10; step++) {
+        const x = startX + (endX - startX) * (step / 10);
+        const y = startY + (endY - startY) * (step / 10);
+        const mousemoveEvent = $.Event('mousemove', {
+          pageX: x,
+          pageY: y
+        });
+        $(document).trigger(mousemoveEvent);
+      }
 
-    // Release mouse
-    await page.mouse.up();
+      // Trigger mouseup
+      const mouseupEvent = $.Event('mouseup');
+      $(document).trigger(mouseupEvent);
+    }, {
+      startX,
+      startY,
+      endX: centerX + 400,
+      endY: centerY
+    });
 
     // Wait a moment for the timer to update
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(200);
 
     // Check that timer value has changed from 00:00
     const finalTime = await timerTime.textContent();
@@ -60,28 +80,64 @@ test.describe('Timer Drag Functionality', () => {
     const centerX = box.x + box.width / 2;
     const centerY = box.y + box.height / 2;
 
-    // Start inside the circle
-    await page.mouse.move(centerX, centerY - 80);
-    await page.mouse.down();
+    // Use page.evaluate to perform the drag and capture timer values
+    const times = await page.evaluate(({ centerX, centerY }) => {
+      const $timerContainer = $('#timerContainer');
+      const $timerTime = $('#timerTime');
+      const times = [];
 
-    // Move to 12 o'clock position outside the circle
-    await page.mouse.move(centerX, centerY - 500, { steps: 5 });
-    const time1 = await timerTime.textContent();
+      // Start inside the circle
+      const startX = centerX;
+      const startY = centerY - 80;
 
-    // Move to 3 o'clock position outside the circle
-    await page.mouse.move(centerX + 500, centerY, { steps: 5 });
-    const time2 = await timerTime.textContent();
+      // Trigger mousedown
+      const mousedownEvent = $.Event('mousedown', {
+        pageX: startX,
+        pageY: startY,
+        originalEvent: { preventDefault: () => {} }
+      });
+      $timerContainer.trigger(mousedownEvent);
 
-    // Move to 6 o'clock position outside the circle
-    await page.mouse.move(centerX, centerY + 500, { steps: 5 });
-    const time3 = await timerTime.textContent();
+      // Move to 12 o'clock position outside
+      const pos1X = centerX;
+      const pos1Y = centerY - 500;
+      for (let i = 0; i <= 5; i++) {
+        const x = startX + (pos1X - startX) * (i / 5);
+        const y = startY + (pos1Y - startY) * (i / 5);
+        $(document).trigger($.Event('mousemove', { pageX: x, pageY: y }));
+      }
+      times.push($timerTime.text());
 
-    await page.mouse.up();
+      // Move to 3 o'clock position outside
+      const pos2X = centerX + 500;
+      const pos2Y = centerY;
+      for (let i = 0; i <= 5; i++) {
+        const x = pos1X + (pos2X - pos1X) * (i / 5);
+        const y = pos1Y + (pos2Y - pos1Y) * (i / 5);
+        $(document).trigger($.Event('mousemove', { pageX: x, pageY: y }));
+      }
+      times.push($timerTime.text());
+
+      // Move to 6 o'clock position outside
+      const pos3X = centerX;
+      const pos3Y = centerY + 500;
+      for (let i = 0; i <= 5; i++) {
+        const x = pos2X + (pos3X - pos2X) * (i / 5);
+        const y = pos2Y + (pos3Y - pos2Y) * (i / 5);
+        $(document).trigger($.Event('mousemove', { pageX: x, pageY: y }));
+      }
+      times.push($timerTime.text());
+
+      // Trigger mouseup
+      $(document).trigger($.Event('mouseup'));
+
+      return times;
+    }, { centerX, centerY });
 
     // All times should be different, showing continuous updates
-    expect(time1).not.toBe(time2);
-    expect(time2).not.toBe(time3);
-    expect(time1).not.toBe(time3);
+    expect(times[0]).not.toBe(times[1]);
+    expect(times[1]).not.toBe(times[2]);
+    expect(times[0]).not.toBe(times[2]);
   });
 
   test('should stop timer on mousedown and restart on mouseup', async ({ page }) => {

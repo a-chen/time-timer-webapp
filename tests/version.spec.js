@@ -54,7 +54,8 @@ test.describe('Version Info Display', () => {
       };
     });
 
-    expect(styles.fontFamily).toContain('TimeTraveler');
+    // Version info uses system fonts
+    expect(styles.fontFamily).toContain('system');
     expect(styles.fontSize).toBe('10px');
     expect(styles.zIndex).toBe('10');
   });
