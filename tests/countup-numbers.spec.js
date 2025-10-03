@@ -29,18 +29,21 @@ test.describe('Timer Number Ordering', () => {
 
     // Wait for DOM to be updated with new number ordering
     // In countup mode, the numbers are recreated in reverse order
-    await page.waitForFunction(() => {
-      const numbers = Array.from(document.querySelectorAll('.timer-number'));
-      if (numbers.length !== 12) return false;
+    await page.waitForFunction(
+      () => {
+        const numbers = Array.from(document.querySelectorAll('.timer-number'));
+        if (numbers.length !== 12) return false;
 
-      // Check that the numbers are in the expected countup order
-      // The DOM text content should be: 0, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5
-      const texts = numbers.map(el => el.textContent);
-      return texts[1] === '55' && texts[2] === '50' && texts[11] === '5';
-    }, {
-      timeout: 5000,
-      polling: 100
-    });
+        // Check that the numbers are in the expected countup order
+        // The DOM text content should be: 0, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5
+        const texts = numbers.map(el => el.textContent);
+        return texts[1] === '55' && texts[2] === '50' && texts[11] === '5';
+      },
+      {
+        timeout: 5000,
+        polling: 100
+      }
+    );
 
     // Additional wait for any CSS transitions to settle
     await page.waitForTimeout(500);
@@ -63,16 +66,19 @@ test.describe('Timer Number Ordering', () => {
     await timerDirection.click();
 
     // Wait for DOM to be updated with countup number ordering
-    await page.waitForFunction(() => {
-      const numbers = Array.from(document.querySelectorAll('.timer-number'));
-      if (numbers.length !== 12) return false;
-      const texts = numbers.map(el => el.textContent);
-      // In countup mode: 0, 55, 50, 45...
-      return texts[1] === '55' && texts[2] === '50' && texts[11] === '5';
-    }, {
-      timeout: 5000,
-      polling: 100
-    });
+    await page.waitForFunction(
+      () => {
+        const numbers = Array.from(document.querySelectorAll('.timer-number'));
+        if (numbers.length !== 12) return false;
+        const texts = numbers.map(el => el.textContent);
+        // In countup mode: 0, 55, 50, 45...
+        return texts[1] === '55' && texts[2] === '50' && texts[11] === '5';
+      },
+      {
+        timeout: 5000,
+        polling: 100
+      }
+    );
 
     await page.waitForTimeout(500);
 
@@ -84,16 +90,19 @@ test.describe('Timer Number Ordering', () => {
     await timerDirection.click();
 
     // Wait for DOM to be updated with countdown number ordering
-    await page.waitForFunction(() => {
-      const numbers = Array.from(document.querySelectorAll('.timer-number'));
-      if (numbers.length !== 12) return false;
-      const texts = numbers.map(el => el.textContent);
-      // In countdown mode: 0, 5, 10, 15...
-      return texts[1] === '5' && texts[2] === '10' && texts[11] === '55';
-    }, {
-      timeout: 5000,
-      polling: 100
-    });
+    await page.waitForFunction(
+      () => {
+        const numbers = Array.from(document.querySelectorAll('.timer-number'));
+        if (numbers.length !== 12) return false;
+        const texts = numbers.map(el => el.textContent);
+        // In countdown mode: 0, 5, 10, 15...
+        return texts[1] === '5' && texts[2] === '10' && texts[11] === '55';
+      },
+      {
+        timeout: 5000,
+        polling: 100
+      }
+    );
 
     await page.waitForTimeout(500);
 
@@ -113,16 +122,19 @@ test.describe('Timer Number Ordering', () => {
     await page.waitForLoadState('networkidle');
 
     // Wait for DOM to be initialized with countup number ordering
-    await page.waitForFunction(() => {
-      const numbers = Array.from(document.querySelectorAll('.timer-number'));
-      if (numbers.length !== 12) return false;
-      const texts = numbers.map(el => el.textContent);
-      // In countup mode: 0, 55, 50, 45...
-      return texts[1] === '55' && texts[2] === '50' && texts[11] === '5';
-    }, {
-      timeout: 5000,
-      polling: 100
-    });
+    await page.waitForFunction(
+      () => {
+        const numbers = Array.from(document.querySelectorAll('.timer-number'));
+        if (numbers.length !== 12) return false;
+        const texts = numbers.map(el => el.textContent);
+        // In countup mode: 0, 55, 50, 45...
+        return texts[1] === '55' && texts[2] === '50' && texts[11] === '5';
+      },
+      {
+        timeout: 5000,
+        polling: 100
+      }
+    );
 
     await page.waitForTimeout(500);
 

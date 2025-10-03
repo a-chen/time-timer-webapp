@@ -8,18 +8,18 @@ import { waitForPageReady } from './helpers.js';
 export const test = base.extend({
   page: async ({ page }, use) => {
     // Setup: Add error listeners to prevent crashes
-    page.on('pageerror', (error) => {
+    page.on('pageerror', error => {
       console.log('Page error:', error.message);
     });
 
-    page.on('console', (msg) => {
+    page.on('console', msg => {
       if (msg.type() === 'error') {
         console.log('Console error:', msg.text());
       }
     });
 
     // Setup: Add request failure handler
-    page.on('requestfailed', (request) => {
+    page.on('requestfailed', request => {
       console.log('Request failed:', request.url(), request.failure()?.errorText);
     });
 
@@ -40,7 +40,7 @@ export const test = base.extend({
 
     // Allow time for any pending operations before closing
     await new Promise(resolve => setTimeout(resolve, 100));
-  },
+  }
 });
 
 export { expect } from '@playwright/test';

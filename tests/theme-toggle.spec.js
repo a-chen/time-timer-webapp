@@ -15,9 +15,15 @@ test.describe('Theme Toggle', () => {
     await waitForPageReady(page);
 
     // Wait for theme to be applied
-    await page.waitForFunction(() => {
-      return document.body.classList.contains('dark-mode') || document.body.classList.contains('light-mode');
-    }, { timeout: 2000 });
+    await page.waitForFunction(
+      () => {
+        return (
+          document.body.classList.contains('dark-mode') ||
+          document.body.classList.contains('light-mode')
+        );
+      },
+      { timeout: 2000 }
+    );
   });
 
   test('should display theme toggle button', async ({ page }) => {

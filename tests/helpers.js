@@ -10,10 +10,13 @@ export async function waitForImages(page) {
     return Promise.all(
       Array.from(document.images)
         .filter(img => !img.complete)
-        .map(img => new Promise((resolve) => {
-          img.addEventListener('load', resolve);
-          img.addEventListener('error', resolve); // Resolve on error too
-        }))
+        .map(
+          img =>
+            new Promise(resolve => {
+              img.addEventListener('load', resolve);
+              img.addEventListener('error', resolve); // Resolve on error too
+            })
+        )
     );
   });
 }
@@ -47,6 +50,6 @@ export async function takeScreenshot(page, filename) {
   return await page.screenshot({
     path: filename,
     fullPage: false,
-    animations: 'disabled',
+    animations: 'disabled'
   });
 }

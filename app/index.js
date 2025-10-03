@@ -1,24 +1,24 @@
-"use strict";
+'use strict';
 
 var DURATION_IN_SECONDS = 60 * 60; // 60 minutes
 
-var $ = global.$ = window.$ = global.jQuery = window.jQuery = require('jquery');
+var $ = (global.$ = window.$ = global.jQuery = window.jQuery = require('jquery'));
 require('jquery-ui-effects');
 var ProgressBar = require('progressbar.js');
 var STORAGE = {
-  domainKey: (key) => 'time-timer/' + key,
+  domainKey: key => 'time-timer/' + key,
   setObject(key, value) {
-      localStorage.setItem(this.domainKey(key), JSON.stringify(value));
+    localStorage.setItem(this.domainKey(key), JSON.stringify(value));
   },
   getObject(key) {
-      var value = localStorage.getItem(this.domainKey(key));
-      return value && JSON.parse(value);
+    var value = localStorage.getItem(this.domainKey(key));
+    return value && JSON.parse(value);
   }
-}
+};
 
-var timerType = "countdown";
+var timerType = 'countdown';
 var timerAlarmSound = new Audio('sounds/alarm_digital.mp3');
-var currentTheme = "dark";
+var currentTheme = 'dark';
 
 var $timerContainer = $('#timerContainer');
 var $timerMarks = $('#timerMarks');
@@ -39,20 +39,20 @@ var timer = new ProgressBar.Circle($timerDisk.get(0), {
   strokeWidth: 40,
   duration: 1 * 1000,
   from: { color: '#c11535' },
-  to:   { color: '#a21630' },
-  step: function(state, timer) {
+  to: { color: '#a21630' },
+  step: function (state, timer) {
     updateTimerBar(timer, state);
     updateTimerTime(timer, state);
   }
 });
-timer.svg.style.transform= 'scale(-1, 1)';
+timer.svg.style.transform = 'scale(-1, 1)';
 
 // restore configuration from storage
 setTimerType(STORAGE.getObject('type') || 'countdown');
 setTimerAlarmSound(STORAGE.getObject('alarmSound') || 'digital');
 setTheme(STORAGE.getObject('theme') || 'dark');
 
-function setTimerType(type){
+function setTimerType(type) {
   if (type !== timerType) {
     timerLastDegree = 360.0 - timerLastDegree;
   }
@@ -65,20 +65,20 @@ function setTimerType(type){
   var rotate = 0.0;
   var marksRotate = 0.0;
   var directionImage = 'graphics/countdown.svg';
-  if(timerType == "countup") {
+  if (timerType == 'countup') {
     rotate = 180.0;
     marksRotate = -180.0;
     directionImage = 'graphics/countup.svg';
   }
 
-  $timerDirection.find('img').attr("src", directionImage);
+  $timerDirection.find('img').attr('src', directionImage);
 
   var animation_transform_rotateY = {
     duration: 1500,
     easing: 'easeOutBack',
-    step: function(now, tween) {
+    step: function (now, tween) {
       if (tween.prop === 'transform_rotateY') {
-        $(this).css('transform','rotateY(' + now +'deg)' );
+        $(this).css('transform', 'rotateY(' + now + 'deg)');
       }
     }
   };
@@ -90,21 +90,21 @@ function setTimerType(type){
   startTimer();
 }
 
-function toggleTimerType(){
-  if(timerType == "countdown") {
-    setTimerType("countup")
+function toggleTimerType() {
+  if (timerType == 'countdown') {
+    setTimerType('countup');
   } else {
-    setTimerType("countdown")
+    setTimerType('countdown');
   }
 }
 
-function setTimerAlarmSound(sound){
+function setTimerAlarmSound(sound) {
   timerAlarmSound = new Audio(`sounds/alarm_${sound}.mp3`);
-  STORAGE.setObject("alarmSound", sound);
+  STORAGE.setObject('alarmSound', sound);
 }
-global.setTimerAlarmSound = setTimerAlarmSound
+global.setTimerAlarmSound = setTimerAlarmSound;
 
-function setTheme(theme){
+function setTheme(theme) {
   currentTheme = theme;
 
   var $body = $('body');
@@ -112,95 +112,95 @@ function setTheme(theme){
   $body.addClass(theme + '-mode');
 
   var themeIcon = theme === 'dark' ? 'graphics/light-mode.svg' : 'graphics/dark-mode.svg';
-  $themeToggle.find('img').attr("src", themeIcon);
+  $themeToggle.find('img').attr('src', themeIcon);
 
   STORAGE.setObject('theme', theme);
 }
 
-function toggleTheme(){
-  if(currentTheme === "dark") {
-    setTheme("light");
+function toggleTheme() {
+  if (currentTheme === 'dark') {
+    setTheme('light');
   } else {
-    setTheme("dark");
+    setTheme('dark');
   }
 }
 
-function updateTimerBar(timer, state){
+function updateTimerBar(timer, state) {
   timer.path.setAttribute('stroke', state.color);
 
   var rotation = timer.value() * 360.0;
 
   // Position timer bar knob: rotate around center, then translate outward to edge
   $timerBarKnob.css({
-    transform: 'rotate(' + (-rotation) + 'deg) translateY(calc(var(--timer-radius) * -0.875))'
+    transform: 'rotate(' + -rotation + 'deg) translateY(calc(var(--timer-radius) * -0.875))'
   });
 }
 
-function updateTimerTime(timer, state){
+function updateTimerTime(timer, state) {
   var valueSeconds = Math.round(timer.value() * DURATION_IN_SECONDS);
   $timerTime.text(seconds2Date(valueSeconds).toISOString().substr(14, 5));
   timer.valueSeconds = valueSeconds;
 }
 
-function startTimer(){
-  var finishValue = timerType == "countdown" ? 0.0 : 1.0;
+function startTimer() {
+  var finishValue = timerType == 'countdown' ? 0.0 : 1.0;
   var valueDiff = Math.abs(finishValue - timer.value());
   var duration = DURATION_IN_SECONDS * 1000 * valueDiff;
-  if(duration > 0) {
+  if (duration > 0) {
     timer.animate(finishValue, { duration });
     clearTimeout(timer.timeout);
-    timer.timeout = setTimeout(function(){
+    timer.timeout = setTimeout(function () {
       timerAlarmSound.play();
     }, duration);
   }
 }
 
-function stopTimer(){
+function stopTimer() {
   clearTimeout(timer.timeout);
   timer.stop();
 }
 
-function snapDegreesToNearest5Seconds(deg){
+function snapDegreesToNearest5Seconds(deg) {
   var seconds = (deg / 360.0) * DURATION_IN_SECONDS;
   var snappedSeconds = Math.round(seconds / 5) * 5;
   var snappedDeg = (snappedSeconds / DURATION_IN_SECONDS) * 360.0;
   return Math.max(0, Math.min(360, snappedDeg));
 }
 
-function setTimer(deg){
-  var startValue = timerType == "countdown" ? 0.0 : 1.0;
-  var newValue = Math.abs(startValue - (deg / 360.0));
+function setTimer(deg) {
+  var startValue = timerType == 'countdown' ? 0.0 : 1.0;
+  var newValue = Math.abs(startValue - deg / 360.0);
   timer.set(newValue);
 }
 
-function seconds2Date(seconds){
+function seconds2Date(seconds) {
   var date = new Date(null);
   date.setSeconds(seconds);
   return date;
 }
 
 var countainerMousedown = false;
-$timerContainer.bind('mousedown touchstart', function(e) {
+$timerContainer.bind('mousedown touchstart', function (e) {
   countainerMousedown = true;
   stopTimer();
   e.originalEvent.preventDefault();
 });
 
 $(document)
-  .bind('mousemove touchmove', function(e) {
+  .bind('mousemove touchmove', function (e) {
     if (countainerMousedown) {
       var containerOffset = $timerContainer.offset();
       var movePos = {
-        x: (e.pageX||e.originalEvent.touches[0].pageX)- containerOffset.left,
-        y: (e.pageY||e.originalEvent.touches[0].pageY) - containerOffset.top
+        x: (e.pageX || e.originalEvent.touches[0].pageX) - containerOffset.left,
+        y: (e.pageY || e.originalEvent.touches[0].pageY) - containerOffset.top
       };
       var containerRadius = $timerContainer.width() / 2;
       var atan = Math.atan2(movePos.x - containerRadius, movePos.y - containerRadius);
       var targetDeg = atan / (Math.PI / 180.0) + 180.0;
 
-      if (timerLastDegree < 90.0 && targetDeg > 270.0 ){
+      if (timerLastDegree < 90.0 && targetDeg > 270.0) {
         targetDeg = 0.0;
-      } else if (timerLastDegree > 270.0 && targetDeg < 90.0 ){
+      } else if (timerLastDegree > 270.0 && targetDeg < 90.0) {
         targetDeg = 360.0;
       }
       targetDeg = snapDegreesToNearest5Seconds(targetDeg);
@@ -208,7 +208,7 @@ $(document)
       setTimer(targetDeg);
     }
   })
-  .bind('mouseup touchend', function(e) {
+  .bind('mouseup touchend', function (e) {
     if (countainerMousedown) {
       countainerMousedown = false;
       startTimer();
@@ -225,8 +225,8 @@ if (!urlParams.has('init')) {
   var newUrl = window.location.pathname + '?' + urlParams.toString();
   window.history.replaceState({}, '', newUrl);
 }
-var initialTimerSeconds = parseInt(urlParams.get('init')) || 0
-var initialTimerDeg = initialTimerSeconds / DURATION_IN_SECONDS * 360
+var initialTimerSeconds = parseInt(urlParams.get('init')) || 0;
+var initialTimerDeg = (initialTimerSeconds / DURATION_IN_SECONDS) * 360;
 initialTimerDeg = Math.max(initialTimerDeg, 0);
 initialTimerDeg = Math.min(initialTimerDeg, 360);
 if (initialTimerDeg > 0) {
@@ -244,22 +244,34 @@ function createTimerMarks(type) {
     var isMajor = i % 5 === 0; // Major tick every 5 minutes
     var tickClass = isMajor ? 'timer-tick-major' : 'timer-tick-minor';
 
-    marksHtml += '<div class="timer-tick ' + tickClass + '" style="transform: rotate(' + angle + 'deg);"></div>';
+    marksHtml +=
+      '<div class="timer-tick ' +
+      tickClass +
+      '" style="transform: rotate(' +
+      angle +
+      'deg);"></div>';
   }
 
   // Create numbers (0, 5, 10, 15, etc.)
   // For countdown: clockwise (0, 5, 10, 15...)
   // For countup: counter-clockwise (0, 55, 50, 45...)
-  for (var i = 0; i < 60; i += 5) {
-    var angle = i * 6;
-    var number = i;
+  for (var j = 0; j < 60; j += 5) {
+    var labelAngle = j * 6;
+    var number = j;
 
     // In countup mode, reverse the number positions to go counter-clockwise
-    if (type === "countup") {
-      number = (60 - i) % 60;
+    if (type === 'countup') {
+      number = (60 - j) % 60;
     }
 
-    marksHtml += '<div class="timer-number" style="transform: rotate(' + (-angle) + 'deg) translateY(calc(var(--timer-radius) * -0.95)) rotate(' + angle + 'deg);">' + number + '</div>';
+    marksHtml +=
+      '<div class="timer-number" style="transform: rotate(' +
+      -labelAngle +
+      'deg) translateY(calc(var(--timer-radius) * -0.95)) rotate(' +
+      labelAngle +
+      'deg);">' +
+      number +
+      '</div>';
   }
 
   $timerMarks.html(marksHtml);
@@ -281,7 +293,9 @@ setInterval(updateDigitalClock, 1000);
 // Display version info
 var versionInfo = require('./version.js');
 var $versionDisplay = $('<div id="versionInfo"></div>');
-$versionDisplay.html('v' + versionInfo.VERSION + ' <span class="build-date">(' + versionInfo.BUILD_DATE + ')</span>');
+$versionDisplay.html(
+  'v' + versionInfo.VERSION + ' <span class="build-date">(' + versionInfo.BUILD_DATE + ')</span>'
+);
 $('body').append($versionDisplay);
 
 // Create Buy Me a Coffee button with custom image

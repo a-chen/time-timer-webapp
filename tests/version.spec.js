@@ -12,7 +12,7 @@ test.describe('Version Info Display', () => {
     await expect(versionElement).toBeVisible();
 
     // Check that it's in the bottom-left corner by checking CSS
-    const position = await versionElement.evaluate((el) => {
+    const position = await versionElement.evaluate(el => {
       const styles = window.getComputedStyle(el);
       return {
         position: styles.position,
@@ -45,7 +45,7 @@ test.describe('Version Info Display', () => {
   test('should have correct styling', async ({ page }) => {
     const versionElement = page.locator('#versionInfo');
 
-    const styles = await versionElement.evaluate((el) => {
+    const styles = await versionElement.evaluate(el => {
       const computed = window.getComputedStyle(el);
       return {
         fontFamily: computed.fontFamily,
