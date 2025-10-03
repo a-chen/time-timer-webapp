@@ -240,14 +240,14 @@ function createTimerMarks(type) {
   }
 
   // Create numbers (0, 5, 10, 15, etc.)
-  // For countdown: counter-clockwise (0, 55, 50, 45...)
-  // For countup: clockwise (0, 5, 10, 15...)
+  // For countdown: clockwise (0, 5, 10, 15...)
+  // For countup: counter-clockwise (0, 55, 50, 45...)
   for (var i = 0; i < 60; i += 5) {
     var angle = i * 6;
     var number = i;
 
-    // In countdown mode, reverse the number positions to go counter-clockwise
-    if (type === "countdown") {
+    // In countup mode, reverse the number positions to go counter-clockwise
+    if (type === "countup") {
       number = (60 - i) % 60;
     }
 
