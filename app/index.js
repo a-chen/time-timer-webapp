@@ -286,10 +286,8 @@ function setupBuyMeCoffeeButton() {
     link.rel = 'noopener noreferrer';
 
     var img = document.createElement('img');
-    img.src = 'graphics/coffee.png';
+    img.src = 'graphics/hot-beverage-blob-emoji_u2615.svg';
     img.alt = 'Buy me a coffee';
-    img.style.width = '32px';
-    img.style.height = '32px';
 
     link.appendChild(img);
     container.appendChild(link);

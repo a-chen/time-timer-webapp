@@ -388,6 +388,11 @@ body.light-mode #optionButtons > div::after {
   filter: invert(70%);
 }
 
+#buyMeCoffee > a > img {
+  height: 100%;
+  width: 100%;
+}
+
 .dropdown:hover .dropdown-content {
   display: block;
 }
@@ -498,13 +503,7 @@ body.light-mode .github-corner::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
-  width: 32px;
-}
-
-#buyMeCoffee img {
-  width: 32px;
-  height: 32px;
-  display: block;
+  height: 100%;
+  width: 100%;
 }
 
