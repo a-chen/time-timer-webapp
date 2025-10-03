@@ -59,6 +59,9 @@ function setTimerType(type){
 
   timerType = type;
 
+  // Recreate timer marks with correct number ordering
+  createTimerMarks(timerType);
+
   var rotate = 0.0;
   var marksRotate = 0.0;
   var directionImage = 'graphics/countdown.svg';
@@ -224,7 +227,7 @@ if (initialTimerDeg > 0) {
 }
 
 // Timer Marks and Numbers
-function createTimerMarks() {
+function createTimerMarks(type) {
   var marksHtml = '';
 
   // Create 60 tick marks (one for each minute)
@@ -236,10 +239,17 @@ function createTimerMarks() {
     marksHtml += '<div class="timer-tick ' + tickClass + '" style="transform: rotate(' + angle + 'deg);"></div>';
   }
 
-  // Create numbers (0, 5, 10, 15, etc.) - counter-clockwise
+  // Create numbers (0, 5, 10, 15, etc.)
+  // For countdown: counter-clockwise (0, 55, 50, 45...)
+  // For countup: clockwise (0, 5, 10, 15...)
   for (var i = 0; i < 60; i += 5) {
     var angle = i * 6;
     var number = i;
+
+    // In countdown mode, reverse the number positions to go counter-clockwise
+    if (type === "countdown") {
+      number = (60 - i) % 60;
+    }
 
     marksHtml += '<div class="timer-number" style="transform: rotate(' + (-angle) + 'deg) translateY(-38vmin) rotate(' + angle + 'deg);">' + number + '</div>';
   }
@@ -247,7 +257,7 @@ function createTimerMarks() {
   $timerMarks.html(marksHtml);
 }
 
-createTimerMarks();
+createTimerMarks(timerType);
 
 // Digital Clock
 function updateDigitalClock() {
