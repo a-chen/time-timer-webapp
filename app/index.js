@@ -160,6 +160,13 @@ function stopTimer(){
   timer.stop();
 }
 
+function snapDegreesToNearest5Seconds(deg){
+  var seconds = (deg / 360.0) * DURATION_IN_SECONDS;
+  var snappedSeconds = Math.round(seconds / 5) * 5;
+  var snappedDeg = (snappedSeconds / DURATION_IN_SECONDS) * 360.0;
+  return Math.max(0, Math.min(360, snappedDeg));
+}
+
 function setTimer(deg){
   var startValue = timerType == "countdown" ? 0.0 : 1.0;
   var newValue = Math.abs(startValue - (deg / 360.0));
@@ -196,6 +203,7 @@ $(document)
       } else if (timerLastDegree > 270.0 && targetDeg < 90.0 ){
         targetDeg = 360.0;
       }
+      targetDeg = snapDegreesToNearest5Seconds(targetDeg);
       timerLastDegree = targetDeg;
       setTimer(targetDeg);
     }
