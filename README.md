@@ -21,6 +21,24 @@ xdg-open "http://localhost:8080"
 docker compose down
 ```
 
+## development setup
+
+### git hooks
+After cloning the repository, install the git hooks:
+
+```shell
+./hooks/setup.sh
+```
+
+This installs:
+- **pre-commit**: Auto-increments version number in package.json
+- **pre-push**: Runs Playwright tests before pushing (prevents pushing broken code)
+
+### running tests
+```shell
+npm test
+```
+
 ## version management
 1. Edit `package.json` and update the `version` field:
    ```json
@@ -29,3 +47,4 @@ docker compose down
    }
    ```
 2. The version file (`app/version.js`) is auto-generated and should not be edited manually.
+3. The version is automatically incremented on each commit via the pre-commit hook.

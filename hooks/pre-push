@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Run tests before pushing to prevent pushing broken code
+
+echo "Running Playwright tests before push..."
+
+# Run the test suite
+npm test
+
+# Check if tests passed
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "Tests failed. Push aborted."
+  echo "Fix the failing tests before pushing."
+  exit 1
+fi
+
+echo ""
+echo "All tests passed! Proceeding with push..."
+
+exit 0
