@@ -84,9 +84,17 @@ gulp.task('build-js',
 );
 
 gulp.task('build-html',
-  function() {
-    return gulp.src('app/**/*.html')
-      .pipe(gulp.dest(destDir + '/'));
+  function(done) {
+    const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+    const version = pkg.version;
+
+    const html = readFileSync('app/index.html', 'utf8');
+    const versionedHtml = html
+      .replace('href="index.css"', `href="index.css?v=${version}"`)
+      .replace('src="bundle.js"', `src="bundle.js?v=${version}"`);
+
+    writeFileSync(`${destDir}/index.html`, versionedHtml);
+    done();
   }
 );
 
