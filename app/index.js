@@ -264,8 +264,7 @@ function updateDigitalClock() {
   var now = new Date();
   var hours = String(now.getHours()).padStart(2, '0');
   var minutes = String(now.getMinutes()).padStart(2, '0');
-  var seconds = String(now.getSeconds()).padStart(2, '0');
-  $digitalClock.text(hours + ':' + minutes + ':' + seconds);
+  $digitalClock.text(hours + ':' + minutes);
 }
 
 updateDigitalClock();
