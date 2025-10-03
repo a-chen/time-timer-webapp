@@ -1,6 +1,6 @@
-# time-timer-webapp [![starline](https://starlines.qoo.monster/assets/qoomon/time-timer-webapp)](https://github.com/qoomon/starlines)
+# time-timer [![starline](https://starlines.qoo.monster/assets/qoomon/time-timer-webapp)](https://github.com/qoomon/starlines)
 
-## [See it live](https://timer.andrewchen.website)
+### [demo](https://timer.andrewchen.website)
 
 - Inspired by the physical [Time Timer](https://www.timetimer.com/)
 - Built on code from [qoomon](https://github.com/qoomon/time-timer-webapp)
@@ -9,8 +9,8 @@ I've always been baffled by why timers rarely have the current time on them, so 
 
 Enjoy
 
-# build and run
-## docker compose instructions
+## build and run
+### docker compose instructions
 ```shell
 # build and start the service
 docker compose up --build
@@ -21,7 +21,7 @@ xdg-open "http://localhost:8080"
 docker compose down
 ```
 
-# version management
+## version management
 1. Edit `package.json` and update the `version` field:
    ```json
    {
