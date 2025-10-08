@@ -67,17 +67,17 @@ body.light-mode #digitalClock {
   position: relative;
   width: 100%;
   aspect-ratio: 1;
-  max-width: min(80vmin, 90vw);
-  max-height: min(80vmin, calc(100vh - 20vh - 64px));
+  max-width: min(80vmin, 90vw, calc(100vh - 20vh - 64px));
+  max-height: min(80vmin, 90vw, calc(100vh - 20vh - 64px));
   border-radius: 50%;
-  --timer-radius: min(calc(90vw / 2), 40vmin);
+  --timer-radius: calc(min(80vmin, 90vw, calc(100vh - 20vh - 64px)) / 2);
 }
 
 @media (max-width: 768px) {
   #timerContainer {
-    max-width: 94vw;
+    max-width: min(94vw, calc(100vh - 20vh - 64px));
     max-height: min(94vw, calc(100vh - 20vh - 64px));
-    --timer-radius: calc(94vw / 2);
+    --timer-radius: calc(min(94vw, calc(100vh - 20vh - 64px)) / 2);
   }
 }
 
