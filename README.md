@@ -4,7 +4,7 @@
 
 Time Timer is a single-page visual timer web app, and this fork's headline change is a visible current clock on the timer face. It shows time as a circular disk that fills or empties as the timer runs, supports countdown and countup modes, and includes theme and alarm controls for everyday use.
 
-![Time Timer screenshot](docs/Screenshot.png)
+![Time Timer screenshot](docs/time-timer-demo.png)
 
 - Inspired by the physical [Time Timer](https://www.timetimer.com/)
 - Built on code from [qoomon](https://github.com/qoomon/time-timer-webapp)
