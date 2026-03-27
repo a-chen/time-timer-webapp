@@ -1,6 +1,6 @@
 # time-timer [![starline](https://starlines.qoo.monster/assets/qoomon/time-timer-webapp)](https://github.com/qoomon/starlines)
 
-### [demo](https://timer.andrewchen.website)
+### [demo](https://timer.andrewchen.cc)
 
 Time Timer is a single-page visual timer web app, and this fork's headline change is a visible current clock on the timer face. It shows time as a circular disk that fills or empties as the timer runs, supports countdown and countup modes, and includes theme and alarm controls for everyday use.
 
