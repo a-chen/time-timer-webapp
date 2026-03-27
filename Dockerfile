@@ -1,5 +1,5 @@
-# Build stage using Node 16 (FROM in uppercase)
-FROM node:16-alpine as build
+# Build stage using Node 22
+FROM node:22-alpine AS build
 
 # Set working directory
 WORKDIR /project
@@ -7,8 +7,8 @@ WORKDIR /project
 # Copy package.json and package-lock.json to optimize caching
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies from the lockfile
+RUN npm ci
 
 # Copy the rest of the application files
 COPY . .
@@ -21,8 +21,8 @@ RUN export BUILD_VERSION="$(node -p "require('./package.json').version")-$(date 
 # Build the application (running gulp)
 RUN npm run build
 
-# Production stage using Nginx (FROM in uppercase)
-FROM nginx:1.21-alpine
+# Production stage using Nginx
+FROM nginx:1.27-alpine
 
 # Copy built files from the build stage into Nginx's HTML folder
 COPY --from=build /project/dist /usr/share/nginx/html

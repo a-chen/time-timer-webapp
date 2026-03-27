@@ -50,8 +50,8 @@ Time Timer is a visual countdown/countup timer web application. This fork adds a
 ## Docker Support
 
 Multi-stage build:
-1. Node 16 Alpine - build stage as currently defined in `Dockerfile` (runs `npm install` and `npm run build`)
-2. Nginx 1.21 Alpine - production stage serving `dist/` on port 80
+1. Node 22 Alpine - build stage as currently defined in `Dockerfile` (runs `npm ci` and `npm run build`)
+2. Nginx 1.27 Alpine - production stage serving `dist/` on port 80
 3. `docker-compose.yml` maps container port `80` to host port `9002` by default, with `EXTERNAL_PORT` available for overrides
 
 **Commands:**

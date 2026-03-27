@@ -114,7 +114,7 @@ Optional troubleshooting when you also want a clean local dependency tree for de
 npm ci
 ```
 
-`npm ci` is usually not required for the containerized flow because the image installs its own dependencies during `docker compose up --build`, but it can help if you are also reproducing local install or test issues on the host.
+`npm ci` is usually not required for the containerized flow because the image installs its own dependencies from the lockfile during `docker compose up --build`, but it can help if you are also reproducing local install or test issues on the host.
 
 ```shell
 # stop the service
