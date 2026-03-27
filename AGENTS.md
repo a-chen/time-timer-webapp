@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Time Timer is a visual countdown/countup timer web application. It displays a circular timer with a shrinking/growing colored arc to visually represent time remaining/elapsed. The app is built as a single-page application and deployed to GitHub Pages.
+Time Timer is a visual countdown/countup timer web application. This fork adds a visible current clock on the timer face alongside the circular timer, plus theme and alarm controls. The app is built as a single-page application and deployed to GitHub Pages.
 
 ## Build System & Commands
 
@@ -10,7 +10,7 @@ Time Timer is a visual countdown/countup timer web application. It displays a ci
 
 **Key commands:**
 - `npm run build` - Full production build (clean → copy resources → build CSS → bundle JS → build HTML)
-- `npm run serve` - Start development server with live reload on `http://localhost:3000` (builds and watches `app/**`)
+- `npm run serve` - Start the BrowserSync development server (usually `http://localhost:3000`, or the next free port) and watch `app/**`
 - `npm test` - Run the Playwright browser test suite
 
 **Build process:**
@@ -18,11 +18,11 @@ Time Timer is a visual countdown/countup timer web application. It displays a ci
 - Output: `dist/` directory
 - JS bundling: Browserify with transforms (packageify, brfs)
 - Entry point: `app/index.js` → `dist/bundle.js`
-- Resources copied: `app/graphics/*`, `app/sounds/*`
+- Resources copied: `app/graphics/*`, `app/sounds/*`, `app/fonts/*`
 
 ## Architecture
 
-**Single-file application:** The entire timer logic lives in `app/index.js` (~196 lines). There are no separate modules or components.
+**App structure:** The runtime logic lives in `app/index.js`, styles live in `app/index.css`, and the HTML shell is `app/index.html`. There are no separate app-side JavaScript modules or components.
 
 **Core dependencies:**
 - jQuery + jQuery UI (for DOM manipulation and animations)
@@ -31,9 +31,9 @@ Time Timer is a visual countdown/countup timer web application. It displays a ci
 **Key concepts:**
 - **Timer modes:** Countdown (default) or countup, toggled by clicking the direction icon
 - **Timer state:** Stored in `ProgressBar.Circle` instance; degree-based positioning (0-360°)
-- **Persistent settings:** LocalStorage stores timer type and alarm sound preference with `time-timer/` key prefix
-- **URL params:** `?init=0` sets initial timer in seconds (default: 0 minutes, max: 60 minutes)
-- **Visual updates:** `step` callback in ProgressBar config drives both arc rendering and time display
+- **Persistent settings:** LocalStorage stores timer type, theme, alarm mute state, and alarm duration with the `time-timer/` key prefix
+- **URL params:** `?init=<seconds>` seeds the initial timer value from `0` to `3600` seconds
+- **Visual updates:** `step` callback in ProgressBar config drives both arc rendering and the timer display, while a separate interval updates the clock on the timer face
 - **User interaction:** Mouse/touch drag on timer disk to set time; stops timer during drag, restarts on release
 
 **State management:**
@@ -50,23 +50,30 @@ Time Timer is a visual countdown/countup timer web application. It displays a ci
 ## Docker Support
 
 Multi-stage build:
-1. Node 16 Alpine - build stage (runs `npm run build`)
-2. Nginx 1.21 Alpine - production stage (serves `dist/` on port 80)
-3. Use `docker compose` instead of `docker-compose`
+1. Node 16 Alpine - build stage as currently defined in `Dockerfile` (runs `npm install` and `npm run build`)
+2. Nginx 1.21 Alpine - production stage serving `dist/` on port 80
+3. `docker-compose.yml` maps container port `80` to host port `9002` by default, with `EXTERNAL_PORT` available for overrides
 
 **Commands:**
 ```sh
-docker build -t qoomon/time-timer-webapp https://github.com/qoomon/time-timer-webapp.git
-docker run --rm -p 8080:80 qoomon/time-timer-webapp
+docker compose up --build
+# open http://localhost:9002
+
+EXTERNAL_PORT=8080 docker compose up --build
+# open http://localhost:8080
+
+docker compose down
 ```
+
+Optional troubleshooting: run `npm ci` first if you also need to reproduce local install or test issues on the host. The containerized flow installs its own dependencies during `docker compose up --build`.
 
 ## Deployment
 
 CI/CD via GitHub Actions (`.github/workflows/build_deploy.yml`):
-- Runs on all branches for build validation
+- Runs `npm ci`, `npm run build`, and `npm test` on pushes and pull requests
 - Deploys `dist/` to `gh-pages` branch only on `master` branch pushes
 - Uses Node 22.x for builds
-- Demo available at: https://qoomon.github.io/time-timer-webapp?init=600
+- Demo available at: https://timer.andrewchen.website?init=600
 
 ## Code Style Notes
 
@@ -90,15 +97,14 @@ When creating git commits:
 **UI Change Verification:**
 - **REQUIRED:** After making any UI changes, you MUST use playwright-cli to verify the changes are working properly
 - In this repository, use `playwright-cli` for interactive browser verification work instead of Playwright MCP tools or other browser automation wrappers.
-- Start the dev server with `npm run serve` (runs on `http://localhost:3000`) when a command needs a running app
+- Start the dev server with `npm run serve` when a command needs a running app, then use the local URL printed by BrowserSync
 - Preferred `playwright-cli` commands:
-  1. `playwright-cli open http://127.0.0.1:3000` to launch the app
+  1. `playwright-cli open http://127.0.0.1:3000` to launch the app when BrowserSync is on its default port
   2. `playwright-cli snapshot` to capture refs before interacting
   3. `playwright-cli click <ref>` / `playwright-cli fill <ref> <text>` / `playwright-cli drag <startRef> <endRef>` for interaction
   4. `playwright-cli screenshot` for visual captures
 - Do not claim Playwright verification is complete unless a playwright-cli command was actually run
-- Run `npm test` or `npx playwright test` for automated coverage when the Playwright web-server startup path is working
-- At the time of writing, the configured Playwright `webServer` startup is flaky and may fail with `AggregateError`, so do not assume `npm test` is a reliable gate until that issue is fixed
+- Run `npm test` or `npx playwright test` for automated coverage
 
 ** Testing **
 - Before a commit is made, a check should be made if there are corresponding tests present to be commited with the code

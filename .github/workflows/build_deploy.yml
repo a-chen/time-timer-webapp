@@ -1,6 +1,5 @@
-# This workflow currently validates installation and production builds.
-# Playwright test execution is intentionally disabled here until the dev-server
-# startup path used by the browser tests is reliable in CI.
+# Validate installation, build output, and browser tests on every branch.
+# Deploy the production build to GitHub Pages on pushes to master.
 
 name: Build & Deploy
 
@@ -22,9 +21,9 @@ jobs:
         node-version: 22.x
     - run: npm ci
     - run: npm run build
-    # - run: npm test
-    #   env:
-    #     CI: true
+    - run: npm test
+      env:
+        CI: true
     - name: Deploy to GitHub Pages
       if: github.ref == 'refs/heads/master'
       uses: qoomon/actions-publish-to-github-pages@v1
