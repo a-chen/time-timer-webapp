@@ -17,7 +17,16 @@ var STORAGE = {
 };
 
 var timerType = 'countdown';
-var timerAlarmSound = new Audio('sounds/alarm_digital.mp3');
+var DEFAULT_ALARM_DURATION_SECONDS = 5;
+var MIN_ALARM_DURATION_SECONDS = 1;
+var MAX_ALARM_DURATION_SECONDS = 30;
+var timerAlarmSound = createAlarmSound();
+var timerAlarmMuted = false;
+var timerAlarmMenuOpen = false;
+var timerAlarmTimeout = null;
+var timerAlarmDurationSeconds = DEFAULT_ALARM_DURATION_SECONDS;
+var timerAlarmUnlocked = false;
+var timerAlarmUnlocking = false;
 var currentTheme = 'dark';
 
 var $timerContainer = $('#timerContainer');
@@ -27,7 +36,13 @@ var $timerBarKnob = $('#timerBarKnob');
 var $timerBarEnd = $('#timerBarEnd');
 var $timerTime = $('#timerTime');
 var $timerDirection = $('#timerDirection');
-var $timerAlarmSelector = $('#timerAlarmSelector');
+var $timerAlarmControl = $('#timerAlarmControl');
+var $timerAlarmButton = $('#timerAlarmButton');
+var $timerAlarmMenu = $('#timerAlarmMenu');
+var $timerAlarmMuteToggle = $('#timerAlarmMuteToggle');
+var $timerAlarmDuration = $('#timerAlarmDuration');
+var $timerAlarmDurationDecrease = $('#timerAlarmDurationDecrease');
+var $timerAlarmDurationIncrease = $('#timerAlarmDurationIncrease');
 var $digitalClock = $('#digitalClock');
 var $themeToggle = $('#themeToggle');
 
@@ -49,8 +64,16 @@ timer.svg.style.transform = 'scale(-1, 1)';
 
 // restore configuration from storage
 setTimerType(STORAGE.getObject('type') || 'countdown');
-setTimerAlarmSound(STORAGE.getObject('alarmSound') || 'digital');
+setTimerAlarmMuted(Boolean(STORAGE.getObject('alarmMuted')));
+setTimerAlarmDuration(STORAGE.getObject('alarmDurationSeconds') || DEFAULT_ALARM_DURATION_SECONDS);
 setTheme(STORAGE.getObject('theme') || 'dark');
+
+function createAlarmSound() {
+  var audio = new Audio('sounds/alarm_digital.mp3');
+  audio.loop = true;
+  audio.preload = 'auto';
+  return audio;
+}
 
 function setTimerType(type) {
   if (type !== timerType) {
@@ -98,11 +121,99 @@ function toggleTimerType() {
   }
 }
 
-function setTimerAlarmSound(sound) {
-  timerAlarmSound = new Audio(`sounds/alarm_${sound}.mp3`);
-  STORAGE.setObject('alarmSound', sound);
+function updateTimerAlarmControl() {
+  var iconPath = timerAlarmMuted ? 'graphics/alarm-muted.svg' : 'graphics/alarm-unmuted.svg';
+  var iconAlt = timerAlarmMuted ? 'Alarm muted' : 'Alarm enabled';
+  var menuStateText = timerAlarmMuted ? 'muted' : 'unmuted';
+
+  $timerAlarmButton.find('img').attr('src', iconPath).attr('alt', iconAlt);
+  $timerAlarmMuteToggle
+    .text(menuStateText)
+    .attr('aria-pressed', timerAlarmMuted)
+    .toggleClass('is-muted', timerAlarmMuted)
+    .toggleClass('is-unmuted', !timerAlarmMuted);
+
+  $timerAlarmDuration.text(timerAlarmDurationSeconds);
 }
-global.setTimerAlarmSound = setTimerAlarmSound;
+
+function setTimerAlarmMenuOpen(isOpen) {
+  timerAlarmMenuOpen = isOpen;
+  $timerAlarmControl.toggleClass('menu-open', isOpen);
+  $timerAlarmMenu.toggleClass('is-open', isOpen).attr('aria-hidden', !isOpen);
+  $timerAlarmButton.attr('aria-expanded', isOpen);
+}
+
+function stopTimerAlarm() {
+  clearTimeout(timerAlarmTimeout);
+  timerAlarmTimeout = null;
+  timerAlarmSound.pause();
+  timerAlarmSound.currentTime = 0;
+}
+
+function unlockTimerAlarm() {
+  if (timerAlarmUnlocked || timerAlarmUnlocking) {
+    return;
+  }
+
+  timerAlarmUnlocking = true;
+  timerAlarmSound.muted = true;
+
+  var unlockPromise = timerAlarmSound.play();
+  if (unlockPromise && unlockPromise.then) {
+    unlockPromise
+      .then(function () {
+        timerAlarmUnlocked = true;
+      })
+      .catch(function () {})
+      .finally(function () {
+        timerAlarmSound.pause();
+        timerAlarmSound.currentTime = 0;
+        timerAlarmSound.muted = false;
+        timerAlarmUnlocking = false;
+      });
+    return;
+  }
+
+  timerAlarmUnlocked = true;
+  timerAlarmSound.pause();
+  timerAlarmSound.currentTime = 0;
+  timerAlarmSound.muted = false;
+  timerAlarmUnlocking = false;
+}
+
+function playTimerAlarm() {
+  stopTimerAlarm();
+  if (timerAlarmMuted) {
+    return;
+  }
+
+  var playPromise = timerAlarmSound.play();
+  if (playPromise && playPromise.catch) {
+    playPromise.catch(function () {});
+  }
+
+  timerAlarmTimeout = setTimeout(function () {
+    stopTimerAlarm();
+  }, timerAlarmDurationSeconds * 1000);
+}
+
+function setTimerAlarmMuted(muted) {
+  timerAlarmMuted = muted;
+  STORAGE.setObject('alarmMuted', muted);
+  if (timerAlarmMuted) {
+    stopTimerAlarm();
+  }
+  updateTimerAlarmControl();
+}
+
+function setTimerAlarmDuration(seconds) {
+  timerAlarmDurationSeconds = Math.max(
+    MIN_ALARM_DURATION_SECONDS,
+    Math.min(MAX_ALARM_DURATION_SECONDS, parseInt(seconds, 10) || DEFAULT_ALARM_DURATION_SECONDS)
+  );
+  STORAGE.setObject('alarmDurationSeconds', timerAlarmDurationSeconds);
+  updateTimerAlarmControl();
+}
 
 function setTheme(theme) {
   currentTheme = theme;
@@ -143,6 +254,7 @@ function updateTimerTime(timer, state) {
 }
 
 function startTimer() {
+  stopTimerAlarm();
   var finishValue = timerType == 'countdown' ? 0.0 : 1.0;
   var valueDiff = Math.abs(finishValue - timer.value());
   var duration = DURATION_IN_SECONDS * 1000 * valueDiff;
@@ -150,13 +262,14 @@ function startTimer() {
     timer.animate(finishValue, { duration });
     clearTimeout(timer.timeout);
     timer.timeout = setTimeout(function () {
-      timerAlarmSound.play();
+      playTimerAlarm();
     }, duration);
   }
 }
 
 function stopTimer() {
   clearTimeout(timer.timeout);
+  stopTimerAlarm();
   timer.stop();
 }
 
@@ -217,6 +330,52 @@ $(document)
 
 $timerDirection.bind('click tap', toggleTimerType);
 $themeToggle.bind('click tap', toggleTheme);
+$timerAlarmButton.on('click', function (event) {
+  event.preventDefault();
+  event.stopPropagation();
+  setTimerAlarmMenuOpen(!timerAlarmMenuOpen);
+});
+
+$timerAlarmMenu.on('click', function (event) {
+  event.stopPropagation();
+});
+
+$timerAlarmMuteToggle.on('click', function (event) {
+  event.preventDefault();
+  event.stopPropagation();
+  setTimerAlarmMuted(!timerAlarmMuted);
+});
+
+$timerAlarmDurationDecrease.on('click', function (event) {
+  event.preventDefault();
+  event.stopPropagation();
+  setTimerAlarmDuration(timerAlarmDurationSeconds - 1);
+});
+
+$timerAlarmDurationIncrease.on('click', function (event) {
+  event.preventDefault();
+  event.stopPropagation();
+  setTimerAlarmDuration(timerAlarmDurationSeconds + 1);
+});
+
+$(document).on('click', function () {
+  if (timerAlarmMenuOpen) {
+    setTimerAlarmMenuOpen(false);
+  }
+});
+
+$(document).on('keydown', function (event) {
+  if (event.key === 'Escape' && timerAlarmMenuOpen) {
+    setTimerAlarmMenuOpen(false);
+  }
+});
+
+['pointerdown', 'keydown', 'touchstart', 'mousedown'].forEach(function (eventName) {
+  document.addEventListener(eventName, unlockTimerAlarm, {
+    capture: true,
+    once: true
+  });
+});
 
 // Initial Time
 var urlParams = new URLSearchParams(window.location.search);
@@ -292,9 +451,26 @@ setInterval(updateDigitalClock, 1000);
 
 // Display version info
 var versionInfo = require('./version.js');
+var buildDate = new Date(versionInfo.BUILD_DATE);
 var $versionDisplay = $('<div id="versionInfo"></div>');
-$versionDisplay.html(
-  'v' + versionInfo.VERSION + ' <span class="build-date">(' + versionInfo.BUILD_DATE + ')</span>'
+
+$versionDisplay.text('v' + versionInfo.VERSION);
+$versionDisplay.attr(
+  'data-tooltip',
+  isNaN(buildDate.getTime())
+    ? versionInfo.BUILD_DATE
+    : new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      })
+        .format(buildDate)
+        .replace(' ', 'T') + ' ET'
 );
 $('body').append($versionDisplay);
 
@@ -308,7 +484,7 @@ function setupBuyMeCoffeeButton() {
     link.rel = 'noopener noreferrer';
 
     var img = document.createElement('img');
-    img.src = 'graphics/hot-beverage-blob-emoji_u2615.svg';
+    img.src = 'graphics/buy-me-coffee.svg';
     img.alt = 'Buy me a coffee';
 
     link.appendChild(img);

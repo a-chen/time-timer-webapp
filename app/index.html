@@ -28,11 +28,23 @@
     <div id="timerDirection" data-tooltip="Toggle countdown/countup">
       <img src="graphics/countdown.svg">
     </div>
-    <div id="timerAlarmSelector" class="dropdown" data-tooltip="Select alarm sound">
-      <img src="graphics/alarm.svg">
-      <div class="dropdown-content">
-        <a onclick="setTimerAlarmSound('digital')" href="#">Digital</a>
-        <a onclick="setTimerAlarmSound('soft')" href="#">Soft</a>
+    <div id="timerAlarmControl" data-tooltip="Open audio controls">
+      <button id="timerAlarmButton" type="button" aria-label="Open audio controls" aria-controls="timerAlarmMenu" aria-expanded="false">
+        <img src="graphics/alarm-unmuted.svg" alt="Alarm enabled">
+      </button>
+      <div id="timerAlarmMenu" aria-hidden="true">
+        <div class="audio-menu-row">
+          <span class="audio-menu-label">on/off</span>
+          <button id="timerAlarmMuteToggle" type="button" class="audio-menu-state" aria-pressed="false">unmuted</button>
+        </div>
+        <div class="audio-menu-row">
+          <span class="audio-menu-label">beep duration (s)</span>
+          <div class="audio-menu-duration-control" aria-label="Beep duration controls">
+            <button id="timerAlarmDurationDecrease" type="button" class="audio-menu-stepper" aria-label="Decrease beep duration">-</button>
+            <span id="timerAlarmDuration" class="audio-menu-duration">5</span>
+            <button id="timerAlarmDurationIncrease" type="button" class="audio-menu-stepper" aria-label="Increase beep duration">+</button>
+          </div>
+        </div>
       </div>
     </div>
     <div id="buyMeCoffee" data-tooltip="Like what you see? Buy me a coffee"></div>

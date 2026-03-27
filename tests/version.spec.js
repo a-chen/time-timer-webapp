@@ -31,15 +31,20 @@ test.describe('Version Info Display', () => {
     const versionText = await versionElement.textContent();
 
     // Should start with 'v' followed by version number
-    expect(versionText).toMatch(/^v\d+\.\d+\.\d+/);
+    expect(versionText).toMatch(/^v\d+\.\d+\.\d+$/);
   });
 
-  test('should display build timestamp', async ({ page }) => {
+  test('should expose build timestamp through the hover tooltip', async ({ page }) => {
     const versionElement = page.locator('#versionInfo');
-    const versionText = await versionElement.textContent();
+    const tooltipText = await versionElement.getAttribute('data-tooltip');
 
-    // Should contain ISO timestamp format in parentheses
-    expect(versionText).toMatch(/\(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\)/);
+    expect(tooltipText).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2} ET$/);
+  });
+
+  test('should use the custom tooltip instead of the browser title tooltip', async ({ page }) => {
+    const versionElement = page.locator('#versionInfo');
+
+    await expect(versionElement).not.toHaveAttribute('title', /.+/);
   });
 
   test('should have correct styling', async ({ page }) => {

@@ -95,7 +95,7 @@ gulp.task(
         }
       });
 
-      gulp.watch('app/**', gulp.series('build', action(browserSync.reload)));
+      gulp.watch(['app/**', '!app/version.js'], gulp.series('build', action(browserSync.reload)));
     })
   )
 );
