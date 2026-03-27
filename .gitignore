@@ -49,6 +49,8 @@ tmp/
 *.tmp
 .cache/
 .playwright-mcp/
+.playwright-cli/
+.claude/
 
 # Package manager
 package-lock.json.bak
