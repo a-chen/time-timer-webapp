@@ -27,6 +27,10 @@ var timerAlarmTimeout = null;
 var timerAlarmDurationSeconds = DEFAULT_ALARM_DURATION_SECONDS;
 var timerAlarmUnlocked = false;
 var timerAlarmUnlocking = false;
+var timerRunning = false;
+var timerWakeLock = null;
+var timerWakeLockRequestPending = null;
+var timerWakeLockReleaseExpected = false;
 var currentTheme = 'dark';
 
 var $timerContainer = $('#timerContainer');
@@ -228,6 +232,83 @@ function setTheme(theme) {
   STORAGE.setObject('theme', theme);
 }
 
+function supportsScreenWakeLock() {
+  return navigator.wakeLock && typeof navigator.wakeLock.request === 'function';
+}
+
+function handleTimerWakeLockRelease() {
+  var shouldReacquire =
+    !timerWakeLockReleaseExpected && timerRunning && document.visibilityState === 'visible';
+
+  timerWakeLock = null;
+  timerWakeLockReleaseExpected = false;
+
+  if (shouldReacquire) {
+    requestTimerWakeLock();
+  }
+}
+
+function requestTimerWakeLock() {
+  if (!timerRunning || !supportsScreenWakeLock() || document.visibilityState !== 'visible') {
+    return Promise.resolve(null);
+  }
+
+  if (timerWakeLock) {
+    return Promise.resolve(timerWakeLock);
+  }
+
+  if (timerWakeLockRequestPending) {
+    return timerWakeLockRequestPending;
+  }
+
+  timerWakeLockRequestPending = navigator.wakeLock
+    .request('screen')
+    .then(function (sentinel) {
+      timerWakeLockRequestPending = null;
+      timerWakeLock = sentinel;
+
+      if (timerWakeLock && typeof timerWakeLock.addEventListener === 'function') {
+        timerWakeLock.addEventListener('release', handleTimerWakeLockRelease);
+      }
+
+      if (!timerRunning || document.visibilityState !== 'visible') {
+        return releaseTimerWakeLock().then(function () {
+          return null;
+        });
+      }
+
+      return sentinel;
+    })
+    .catch(function () {
+      timerWakeLockRequestPending = null;
+      return null;
+    });
+
+  return timerWakeLockRequestPending;
+}
+
+function releaseTimerWakeLock() {
+  var wakeLock = timerWakeLock;
+
+  if (!wakeLock || typeof wakeLock.release !== 'function') {
+    timerWakeLock = null;
+    timerWakeLockReleaseExpected = false;
+    return Promise.resolve();
+  }
+
+  timerWakeLock = null;
+  timerWakeLockReleaseExpected = true;
+
+  return wakeLock
+    .release()
+    .catch(function () {})
+    .then(function () {
+      if (timerWakeLockReleaseExpected) {
+        timerWakeLockReleaseExpected = false;
+      }
+    });
+}
+
 function toggleTheme() {
   if (currentTheme === 'dark') {
     setTheme('light');
@@ -258,18 +339,26 @@ function startTimer() {
   var finishValue = timerType == 'countdown' ? 0.0 : 1.0;
   var valueDiff = Math.abs(finishValue - timer.value());
   var duration = DURATION_IN_SECONDS * 1000 * valueDiff;
+  timerRunning = duration > 0;
   if (duration > 0) {
+    requestTimerWakeLock();
     timer.animate(finishValue, { duration });
     clearTimeout(timer.timeout);
     timer.timeout = setTimeout(function () {
+      timerRunning = false;
+      releaseTimerWakeLock();
       playTimerAlarm();
     }, duration);
+  } else {
+    releaseTimerWakeLock();
   }
 }
 
 function stopTimer() {
+  timerRunning = false;
   clearTimeout(timer.timeout);
   stopTimerAlarm();
+  releaseTimerWakeLock();
   timer.stop();
 }
 
@@ -375,6 +464,28 @@ $(document).on('keydown', function (event) {
     capture: true,
     once: true
   });
+});
+
+['pointerdown', 'keydown', 'touchstart', 'mousedown'].forEach(function (eventName) {
+  document.addEventListener(
+    eventName,
+    function () {
+      if (timerRunning) {
+        requestTimerWakeLock();
+      }
+    },
+    {
+      capture: true
+    }
+  );
+});
+
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'visible') {
+    requestTimerWakeLock();
+  } else {
+    releaseTimerWakeLock();
+  }
 });
 
 // Initial Time
