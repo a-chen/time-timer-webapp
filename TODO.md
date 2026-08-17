@@ -10,7 +10,7 @@
 [/] make the circle and the timer bar end scale with the screen size, on small phones, the circle wall seems too thick and the timer bar end seems too big, it's running into the minute text
 [/] have the version text on the bottom left use the same typeface as the hover text, it's not rendering well at super small fonts sizes
 [/] have the timer bar increment per 5 seconds instead of one second
-[ ] add audio controls for the alarm, see diagram on excalidraw
+[x] add audio controls for the alarm, see diagram on excalidraw
 [ ] on ipad, the timer is not bounded by vertical bounds, bottom of clock is cut off
 [ ] figure out how to get it to show up properly on google, "Visual timer with a clock"
 [ ] fix/disable github pages workflow
